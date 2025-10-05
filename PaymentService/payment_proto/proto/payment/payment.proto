@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package payment;
+
+option go_package = "laskapashka.payment.v1;paymentV1";
+
+service PaymentService {
+    rpc CreatePayment(CreatePaymentRequest) returns (CreatePaymentResponse);
+    rpc GetPaymentStatus(GetPaymentStatusRequest) returns (GetPaymentStatusReponse);
+    rpc RefundPayment(RefundPaymentRequest) returns (RefundPaymentResponse);
+}
+
+message CreatePaymentRequest {
+    string booking_id = 1;
+    string user_id = 2;
+    double amount = 3;
+    string currency = 4;
+    string method = 5;
+    string token = 6;
+    string idempotency_key = 7;
+}
+
+message CreatePaymentResponse {
+    string url = 1;
+    string payment_id = 2;
+    string status = 3;
+}
+
+message GetPaymentStatusRequest {
+    string payment_id = 1;
+}
+
+message GetPaymentStatusReponse {
+    string status = 1;
+}
+
+message RefundPaymentRequest {
+  string payment_id = 1;
+}
+
+message RefundPaymentResponse {
+  bool success = 1;
+}

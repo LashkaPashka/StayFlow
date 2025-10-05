@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    container_name: ${CONTAINER_NAME}_postgres
+    ports:
+      - 5432:5432
+    environment:
+       POSTGRES_USER: ${POSTGRES_USER}
+       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+       PGDATA: ${PGDATA}
+    volumes:
+      - postgres_data:${PGDATA}
+    networks:
+      - postgres_net
+
+  hotel-service:
+    build:
+      context: ./HotelService
+      dockerfile: ./Dockerfile
+    image: hotel_img
+    volumes:
+      - ./HotelService/server/config:/app/config
+    environment:
+      CONFIG: ${CONFIG}
+    restart: always
+    container_name: ${CONTAINER_NAME}_hotel
+    ports:
+      - 8081:8081
+    networks:
+      - postgres_net
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+
+networks:
+  postgres_net:
+    driver: bridge

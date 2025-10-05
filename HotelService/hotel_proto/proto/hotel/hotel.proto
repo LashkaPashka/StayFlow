@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package hotels;
+
+option go_package = "laskapashka.hotels.v1;hotelsV1";
+
+service HotelService {
+    rpc CheckAvailability(CheckAvailabilityRequest) returns (CheckAvailabilityResponse);
+    rpc ReserveRoom(ReserveRoomRequest) returns (ReserveRoomResponse);
+    rpc ReleaseRoom(ReleaseRoomRequest) returns (ReleaseRoomResponse);
+}
+
+message CheckAvailabilityRequest {
+    string hotel_id = 1;
+    string room_type_id = 2;
+    string check_in = 3;
+    string check_out = 4;
+}
+
+message CheckAvailabilityResponse {
+    bool available = 1;
+    int32 available_rooms = 2;
+}
+
+message ReserveRoomRequest {
+    string hotel_id = 1;
+    string room_type_id = 2;
+    string check_in = 3;
+    string check_out = 4;
+    int32 rooms_count = 5;
+}
+
+message ReserveRoomResponse {
+    bool success = 1;
+}
+
+message ReleaseRoomRequest {
+    string hotel_id = 1;
+    string room_type_id = 2;
+    string check_in = 3;   
+    string check_out = 4; 
+    int32 rooms_count = 5;
+}
+
+message ReleaseRoomResponse {
+    bool success = 1;
+}

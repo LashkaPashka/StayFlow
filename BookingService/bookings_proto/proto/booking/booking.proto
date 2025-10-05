@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package bookings;
+
+option go_package = "lashkapashka.bookings.v1;bookingsV1";
+
+service BookingsService {
+    rpc CreateBooking(CreateBookingRequest) returns (CreateBookingsResponse);
+    rpc ConfirmBooking(ConfirmBookingRequest) returns (Booking);
+    rpc CancelBooking(CancelBookingRequest) returns (Booking);
+    rpc GetBooking(GetBookingRequest) returns (Booking);
+    rpc ListUserBookings(ListUserBookingsRequest) returns (ListUserBookingsReponse);
+}
+
+message CreateBookingRequest {
+    string user_id = 1;
+    string hotel_id = 2;
+    string room_type_id = 3;
+    string check_in = 4;
+    string check_out = 5;
+    int32 rooms_count = 6;
+    string idempotency_key = 7;
+    PaymentInfo payment = 8;
+}
+
+message PaymentInfo {
+    string method = 1;
+    string token = 2;
+    double total_amount = 3;
+    string currency = 4;
+}
+
+message CreateBookingsResponse {
+    string booking_id = 1;
+    string status = 2;
+}
+
+message ConfirmBookingRequest {
+    string booking_id = 1;
+    string payment_id = 2;
+}
+
+message Booking {
+    string booking_id = 1;
+    string user_id = 2;
+    string hotel_id = 3;
+    string room_type_id = 4;
+    string status = 5;
+    string check_in = 6;
+    string check_out = 7;
+    string created_at = 8;
+    string updated_at = 9;
+}
+
+message CancelBookingRequest {
+  string booking_id = 1;  // ID бронирования
+  string user_id = 2;     // Можно проверить право на отмену
+  string reason = 3;      // Причина отмены (опционально)
+}
+
+message GetBookingRequest {
+  string booking_id = 1;  // ID бронирования
+  string user_id = 2;     // Для проверки прав доступа
+}
+
+message ListUserBookingsRequest {
+    string user_id = 1;
+    int32 limit = 2;
+    int32 offset = 3;
+}
+
+message ListUserBookingsReponse {
+    repeated Booking bookings = 1;
+}
