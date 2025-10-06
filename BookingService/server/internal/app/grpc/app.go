@@ -13,11 +13,10 @@ import (
 	"google.golang.org/grpc"
 )
 
-
 type App struct {
-	logger *slog.Logger
+	logger     *slog.Logger
 	gRPCServer *grpc.Server
-	port int
+	port       int
 }
 
 func New(
@@ -37,9 +36,9 @@ func New(
 	bookingGRPC.Register(gRPCServer, bookingService)
 
 	return &App{
-		logger: logger,
+		logger:     logger,
 		gRPCServer: gRPCServer,
-		port: port,
+		port:       port,
 	}
 }
 
@@ -63,19 +62,19 @@ func (a *App) Run() error {
 	}
 
 	log.Info("grpc server started", slog.String("addr", l.Addr().String()))
-	
+
 	if err := a.gRPCServer.Serve(l); err != nil {
 		return fmt.Errorf("%s:%w", op, err)
-	} 
+	}
 
-	return  nil
+	return nil
 }
 
 func (a *App) Stop() {
 	const op = "grpcapp.Stop"
 
 	a.logger.With(slog.String("op", op)).
-			Info("stopping gRPC server", slog.Int("port", a.port))
+		Info("stopping gRPC server", slog.Int("port", a.port))
 
 	a.gRPCServer.GracefulStop()
 }

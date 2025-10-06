@@ -9,7 +9,7 @@ func RandomNumbers(length int) (string, error) {
 	const numbers = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
 		"abcdefghijklmnopqrstuvwxyz" +
 		"0123456789"
-	
+
 	buffer := make([]byte, length)
 	_, err := rand.Read(buffer)
 	if err != nil {

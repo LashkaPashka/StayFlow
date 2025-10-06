@@ -10,24 +10,24 @@ import (
 )
 
 const (
-	userID = "e4a7f8f9-2c53-4d1c-b2d4-4a9395b81c31"
+	userID    = "e4a7f8f9-2c53-4d1c-b2d4-4a9395b81c31"
 	bookingID = "7b2d9f4a-8c3e-4f6d-9a1b-2e5c7d8f0a12"
 )
 
 var payment = &model.Payment{
-	UserID: userID,
-	BookingID: bookingID,
-	Amount: 5000,
-	Currency: "RUB",
-	Method: "card",
-	PaymentID: "12d3d3d3",
+	UserID:       userID,
+	BookingID:    bookingID,
+	Amount:       5000,
+	Currency:     "RUB",
+	Method:       "card",
+	PaymentID:    "12d3d3d3",
 	ClientSecret: "d3f23f3",
-	Status: "PENDING",
-	Response: "WD1D",
-} 
+	Status:       "PENDING",
+	Response:     "WD1D",
+}
 
 var connStr = "postgres://postgres:root@localhost:5432/PaymentDb"
-var st *Storage 
+var st *Storage
 
 func TestMain(m *testing.M) {
 	logger := setupLogger("test")
@@ -41,13 +41,13 @@ func TestStoreCreatedPayment(t *testing.T) {
 	if err := st.StoreCreatedPayment(context.Background(), payment); err != nil {
 		t.Fatal("Test #1: error - StoreCreatedPayment")
 	}
-	
+
 	t.Log("Ok!")
 }
 
 func TestUpdatePayment(t *testing.T) {
 	payment.Status = "PENDING"
-	
+
 	if err := st.UpdatePayment(context.Background(), payment); err != nil {
 		t.Fatal("Test #2: error - UpdatePayment")
 	}
@@ -76,17 +76,16 @@ func TestGetStatusPayment(t *testing.T) {
 
 	if len(status) == 0 {
 		t.Fatal("Test #4: error - length status equal zero")
-	} 
+	}
 
 	t.Log(status)
 }
-
 
 func setupLogger(env string) *slog.Logger {
 	var log *slog.Logger
 
 	switch env {
-		case "test":
+	case "test":
 		log = slog.New(
 			slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}),
 		)

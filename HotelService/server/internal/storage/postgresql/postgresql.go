@@ -10,7 +10,7 @@ import (
 )
 
 type Storage struct {
-	pool *pgxpool.Pool
+	pool   *pgxpool.Pool
 	logger *slog.Logger
 }
 
@@ -32,18 +32,18 @@ func New(connStr string, logger *slog.Logger) *Storage {
 	logger.Info("Connect Db was made successfully!")
 
 	return &Storage{
-		pool: pool,
+		pool:   pool,
 		logger: logger,
 	}
 }
 
 func (s *Storage) GetAvailableRooms(
 	ctx context.Context,
-	hotelID, 
-	roomTypeID, 
-	checkIn, 
+	hotelID,
+	roomTypeID,
+	checkIn,
 	checkOut string,
-) (availableRooms int, err error){
+) (availableRooms int, err error) {
 	const op = "HotelService.storage.postgresql.GetAvailableRooms"
 
 	query := `SELECT MIN(available) 
@@ -54,12 +54,12 @@ func (s *Storage) GetAvailableRooms(
 			 `
 
 	args := pgx.NamedArgs{
-		"hotel_id": hotelID,
+		"hotel_id":     hotelID,
 		"room_type_id": roomTypeID,
-		"check_in": checkIn,
-		"check_out": checkOut,
+		"check_in":     checkIn,
+		"check_out":    checkOut,
 	}
-	
+
 	err = s.pool.QueryRow(ctx, query, args).Scan(&availableRooms)
 	if err != nil {
 		s.logger.Error("Invalid sql query",
@@ -76,13 +76,13 @@ func (s *Storage) GetAvailableRooms(
 }
 
 func (s *Storage) BookedRoom(
-		ctx context.Context,
-		hotelID, 
-		roomTypeID, 
-		checkIn, 
-		checkOut string,
-		roomsCount int,
-	) (success bool, err error) {
+	ctx context.Context,
+	hotelID,
+	roomTypeID,
+	checkIn,
+	checkOut string,
+	roomsCount int,
+) (success bool, err error) {
 	const op = "HotelService.storage.postgresql.BookedRoom"
 
 	query := `UPDATE room_inventory
@@ -93,17 +93,17 @@ func (s *Storage) BookedRoom(
 					 AND date BETWEEN @check_in AND @check_out)
 			`
 	args := pgx.NamedArgs{
-		"hotel_id": hotelID,
+		"hotel_id":     hotelID,
 		"room_type_id": roomTypeID,
-		"check_in": checkIn,
-		"check_out": checkOut,
-		"rooms_count": roomsCount,
+		"check_in":     checkIn,
+		"check_out":    checkOut,
+		"rooms_count":  roomsCount,
 	}
 
 	if _, err = s.pool.Exec(ctx, query, args); err != nil {
 		s.logger.Error("Invalid sql query",
-					    slog.String("err", err.Error()),
-						slog.String("op", op),
+			slog.String("err", err.Error()),
+			slog.String("op", op),
 		)
 		return false, err
 	}
@@ -114,13 +114,13 @@ func (s *Storage) BookedRoom(
 }
 
 func (s *Storage) FreeRoom(
-		ctx context.Context, 
-		hotelID, 
-		roomTypeID, 
-		checkIn, 
-		checkOut string, 
-		roomsCount int,
-	) (success bool, err error) {
+	ctx context.Context,
+	hotelID,
+	roomTypeID,
+	checkIn,
+	checkOut string,
+	roomsCount int,
+) (success bool, err error) {
 	const op = "HotelService.storage.postgresql.FreeRoom"
 
 	query := `UPDATE room_inventory
@@ -131,17 +131,17 @@ func (s *Storage) FreeRoom(
 					 AND date BETWEEN @check_in AND @check_out)
 			 `
 	args := pgx.NamedArgs{
-		"hotel_id": hotelID,
+		"hotel_id":     hotelID,
 		"room_type_id": roomTypeID,
-		"check_in": checkIn,
-		"check_out": checkOut,
-		"rooms_count": roomsCount,
+		"check_in":     checkIn,
+		"check_out":    checkOut,
+		"rooms_count":  roomsCount,
 	}
 
 	if _, err = s.pool.Exec(ctx, query, args); err != nil {
 		s.logger.Error("Invalid sql query",
-					    slog.String("err", err.Error()),
-						slog.String("op", op),
+			slog.String("err", err.Error()),
+			slog.String("op", op),
 		)
 		return false, err
 	}

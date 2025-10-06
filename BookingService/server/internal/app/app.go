@@ -19,7 +19,7 @@ func New(
 ) *App {
 
 	grpcApp := grpcapp.New(cfg, logger, grpcPort)
-	
+
 	return &App{
 		GRPCServer: grpcApp,
 	}

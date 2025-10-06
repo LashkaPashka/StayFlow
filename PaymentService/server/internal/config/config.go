@@ -9,17 +9,17 @@ import (
 )
 
 type Config struct {
-	Env string `yaml:"env" env-default:"local"`
-	StoragePath string `yaml:"storage_path" env-required:"true"`
-	StripeSecret string `yaml:"stripe_secret" env-required:"true"`
-	StripePublish string `yaml:"stripe_publish" env-required:"true"`
-	SuccessURL string `yaml:"success_url" env-default:"youtube.com"`
-	CancelURL string `yaml:"cancel_url" env-default:"google.com"`
-	GRPC GRPCConfig `yaml:"grpc"`
+	Env           string     `yaml:"env" env-default:"local"`
+	StoragePath   string     `yaml:"storage_path" env-required:"true"`
+	StripeSecret  string     `yaml:"stripe_secret" env-required:"true"`
+	StripePublish string     `yaml:"stripe_publish" env-required:"true"`
+	SuccessURL    string     `yaml:"success_url" env-default:"youtube.com"`
+	CancelURL     string     `yaml:"cancel_url" env-default:"google.com"`
+	GRPC          GRPCConfig `yaml:"grpc"`
 }
 
 type GRPCConfig struct {
-	Port string `yaml:"port"`
+	Port    string        `yaml:"port"`
 	Timeout time.Duration `yaml:"timeout"`
 }
 
@@ -39,7 +39,7 @@ func MustLoad() *Config {
 		panic("failed to read config " + err.Error())
 	}
 
-	return  &cfg
+	return &cfg
 }
 
 func fetchConfigPath() string {

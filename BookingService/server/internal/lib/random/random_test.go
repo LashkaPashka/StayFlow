@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-
 func TestRandomString(t *testing.T) {
 	gotRandomString := NewRandomString("p_", 7)
 

@@ -24,8 +24,6 @@ import (
 // 	},
 // }
 
-
-
 const (
 	statusPending = "PENDING"
 )
@@ -34,23 +32,23 @@ func ConvertBody(in *bookingsV1.CreateBookingRequest) model.Booking {
 	nights := ParseDate(in.CheckIn, in.CheckOut)
 
 	return model.Booking{
-		UserID: in.UserId,
-		HotelID: in.HotelId,
-		RoomTypeID: in.RoomTypeId,
-		CheckIn: in.CheckIn,
-		CheckOut: in.CheckOut,
-		Nights: nights,
-		RoomsCount: int(in.RoomsCount),
-		Status: statusPending,
-		TotalAmount: in.Payment.TotalAmount,
-		Currency: in.Payment.Currency,
+		UserID:         in.UserId,
+		HotelID:        in.HotelId,
+		RoomTypeID:     in.RoomTypeId,
+		CheckIn:        in.CheckIn,
+		CheckOut:       in.CheckOut,
+		Nights:         nights,
+		RoomsCount:     int(in.RoomsCount),
+		Status:         statusPending,
+		TotalAmount:    in.Payment.TotalAmount,
+		Currency:       in.Payment.Currency,
 		IdempotencyKey: in.IdempotencyKey,
 	}
 }
 
 func ParseDate(checkIn, checkOut string) int {
 	layout := "2006-01-02"
-	
+
 	parseCheckIn, _ := time.Parse(layout, checkIn)
 	parseCheckOut, _ := time.Parse(layout, checkOut)
 
@@ -59,5 +57,5 @@ func ParseDate(checkIn, checkOut string) int {
 
 	diff := dateCheckOut.Sub(dateCheckIn)
 
-	return int(diff.Hours()/24)
+	return int(diff.Hours() / 24)
 }

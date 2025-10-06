@@ -17,7 +17,7 @@ type Storage struct {
 
 func New(cfg config.Config, logger *slog.Logger) *Storage {
 	const op = "bookingService.storage.postgresql.New"
-	
+
 	pool, err := pgxpool.New(context.Background(), cfg.StoragePath)
 	if err != nil {
 		logger.Error("Invalid connection Db", slog.String("File error: ", op))
@@ -54,7 +54,7 @@ func (s *Storage) SaveBooking(ctx context.Context, booking model.Booking) (booki
 		"rooms_count":     booking.RoomsCount,
 		"nights":          booking.Nights,
 		"total_amount":    booking.TotalAmount,
-		"currency":	       booking.Currency,
+		"currency":        booking.Currency,
 		"status":          booking.Status,
 		"idempotency_key": booking.IdempotencyKey,
 	}
@@ -64,7 +64,7 @@ func (s *Storage) SaveBooking(ctx context.Context, booking model.Booking) (booki
 		s.Logger.Error("Invalid query SQL", slog.String("op", op))
 		return "", err
 	}
-	
+
 	s.Logger.Info("Booking was created successffuly in Db")
 
 	return booking_id, err
@@ -72,7 +72,7 @@ func (s *Storage) SaveBooking(ctx context.Context, booking model.Booking) (booki
 
 func (s *Storage) UpdateStatusOfBooking(ctx context.Context, booking_id string, status string) (booking model.Booking, err error) {
 	const op = "BookingService.storage.postgresql.UpdateStatusOfBooking"
-	
+
 	query := `UPDATE bookings 
 			  SET status = @status 
 			  WHERE booking_id = @booking_id
@@ -81,10 +81,10 @@ func (s *Storage) UpdateStatusOfBooking(ctx context.Context, booking_id string, 
 			 `
 
 	args := pgx.NamedArgs{
-		"status": status,
+		"status":     status,
 		"booking_id": booking_id,
 	}
-	
+
 	err = s.Pool.QueryRow(ctx, query, args).Scan(
 		&booking.UserID,
 		&booking.HotelID,
@@ -117,7 +117,7 @@ func (s *Storage) GetBooking(ctx context.Context, booking_id string, user_id str
 
 	args := pgx.NamedArgs{
 		"booking_id": booking_id,
-		"user_id": user_id,
+		"user_id":    user_id,
 	}
 
 	if err = s.Pool.QueryRow(ctx, query, args).Scan(
@@ -168,7 +168,7 @@ func (s *Storage) GetBookings(ctx context.Context, user_id string) (bookings []m
 			s.Logger.Error("Invalid getbookings", slog.String("op", op))
 			return bookings, err
 		}
-		
+
 		bookings = append(bookings, booking)
 	}
 

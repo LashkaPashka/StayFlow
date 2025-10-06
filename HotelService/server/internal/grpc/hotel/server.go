@@ -18,9 +18,9 @@ type Service interface {
 
 	ReserveRoom(
 		ctx context.Context,
-		hotelId, 
-		roomTypeID, 
-		checkIn, 
+		hotelId,
+		roomTypeID,
+		checkIn,
 		checkOut string,
 		roomsCount int,
 	) (success bool, err error)
@@ -32,9 +32,8 @@ type Service interface {
 		checkIn,
 		checkOut string,
 		roomsCount int,
-	) (success bool, err error) 
+	) (success bool, err error)
 }
-
 
 type serverAPI struct {
 	hotelsV1.UnimplementedHotelServiceServer
@@ -55,7 +54,7 @@ func (s *serverAPI) CheckAvailability(
 	}
 
 	return &hotelsV1.CheckAvailabilityResponse{
-		Available: available,
+		Available:      available,
 		AvailableRooms: int32(availableRooms),
 	}, nil
 }
@@ -80,7 +79,7 @@ func (s *serverAPI) ReleaseRoom(
 ) (*hotelsV1.ReleaseRoomResponse, error) {
 	success, err := s.hotelS.ReleaseRoom(ctx, in.HotelId, in.RoomTypeId, in.CheckIn, in.CheckOut, int(in.RoomsCount))
 	if err != nil {
-		return  &hotelsV1.ReleaseRoomResponse{}, err
+		return &hotelsV1.ReleaseRoomResponse{}, err
 	}
 
 	return &hotelsV1.ReleaseRoomResponse{

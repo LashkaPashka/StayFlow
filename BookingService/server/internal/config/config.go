@@ -9,15 +9,15 @@ import (
 )
 
 type Config struct {
-	Env string `yaml:"env" env-default:"local"`
-	AddrHotelService string `yaml:"addr_hotel_service" env-required:"true"`
-	AddrPaymentService string `yaml:"addr_payment_service" env-required:"true"`
-	StoragePath string `yaml:"storage_path" env-required:"true"`
-	GRPC GRPCConfig `yaml:"grpc"`
+	Env                string     `yaml:"env" env-default:"local"`
+	AddrHotelService   string     `yaml:"addr_hotel_service" env-required:"true"`
+	AddrPaymentService string     `yaml:"addr_payment_service" env-required:"true"`
+	StoragePath        string     `yaml:"storage_path" env-required:"true"`
+	GRPC               GRPCConfig `yaml:"grpc"`
 }
 
 type GRPCConfig struct {
-	Port int `yaml:"port"`
+	Port    int           `yaml:"port"`
 	Timeout time.Duration `yaml:"timeout"`
 }
 
@@ -33,7 +33,7 @@ func MustLoad() *Config {
 	}
 
 	var cfg Config
-	
+
 	if err := cleanenv.ReadConfig(path, &cfg); err != nil {
 		panic("failed to read config " + err.Error())
 	}
@@ -52,4 +52,4 @@ func fetchConfigPath() string {
 	}
 
 	return res
-} 
+}

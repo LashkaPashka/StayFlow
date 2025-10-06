@@ -10,7 +10,7 @@ import (
 )
 
 type Service interface {
-	CreatePayment(ctx context.Context, payment *model.Payment) (paymentID, url string,err error)
+	CreatePayment(ctx context.Context, payment *model.Payment) (paymentID, url string, err error)
 	GetPaymentStatus(ctx context.Context, paymentID string) (status string, err error)
 }
 
@@ -26,7 +26,7 @@ func Register(serivce Service, gRPCServer *grpc.Server) {
 func (s *serverAPI) CreatePayment(
 	ctx context.Context,
 	in *paymentV1.CreatePaymentRequest,
-) (*paymentV1.CreatePaymentResponse, error){
+) (*paymentV1.CreatePaymentResponse, error) {
 	payment := converter.Convert(in)
 
 	paymentID, url, err := s.service.CreatePayment(ctx, payment)
@@ -35,16 +35,16 @@ func (s *serverAPI) CreatePayment(
 	}
 
 	return &paymentV1.CreatePaymentResponse{
-		Url: url,
+		Url:       url,
 		PaymentId: paymentID,
-		Status: string(payment.Status),
+		Status:    string(payment.Status),
 	}, nil
 }
 
 func (s *serverAPI) GetPaymentStatus(
 	ctx context.Context,
 	in *paymentV1.GetPaymentStatusRequest,
-) (*paymentV1.GetPaymentStatusReponse, error){
+) (*paymentV1.GetPaymentStatusReponse, error) {
 
 	status, err := s.service.GetPaymentStatus(ctx, in.PaymentId)
 	if err != nil {
@@ -57,7 +57,7 @@ func (s *serverAPI) GetPaymentStatus(
 func (s *serverAPI) RefundPayment(
 	ctx context.Context,
 	in *paymentV1.RefundPaymentRequest,
-) (*paymentV1.RefundPaymentResponse, error){
+) (*paymentV1.RefundPaymentResponse, error) {
 
 	return &paymentV1.RefundPaymentResponse{}, nil
 }

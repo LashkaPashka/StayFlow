@@ -15,24 +15,24 @@ import (
 )
 
 const (
-	userID = "e4a7f8f9-2c53-4d1c-b2d4-4a9395b81c31"
+	userID    = "e4a7f8f9-2c53-4d1c-b2d4-4a9395b81c31"
 	bookingID = "7b2d9f4a-8c3e-4f6d-9a1b-2e5c7d8f0a12"
-	pID = "cs_test_a1xY0dqUVKSlbxvmjnJHRW2ndNc3wG9cftw8moj1ddOw7LASws8K7rLTKr"
+	pID       = "cs_test_a1xY0dqUVKSlbxvmjnJHRW2ndNc3wG9cftw8moj1ddOw7LASws8K7rLTKr"
 )
 
 var payment = &model.Payment{
-	UserID: userID,
+	UserID:    userID,
 	BookingID: bookingID,
-	Amount: 5000,
-	Currency: "RUB",
-	Method: "card",
+	Amount:    5000,
+	Currency:  "RUB",
+	Method:    "card",
 }
 
-var pt *Payment 
+var pt *Payment
 
 func TestMain(m *testing.M) {
 	cfg := config.MustLoad()
-	
+
 	logger := setupLogger("test")
 	pt = New(cfg, logger)
 
@@ -47,7 +47,7 @@ func TestCreatePayment(t *testing.T) {
 
 	userID := sessionResult.Metadata["user_id"]
 	bookingID := sessionResult.Metadata["booking_id"]
-	
+
 	if userID == "" || bookingID == "" {
 		t.Fatal("user_id is empty && booking_id is empty")
 	}
@@ -76,7 +76,7 @@ func setupLogger(env string) *slog.Logger {
 	var log *slog.Logger
 
 	switch env {
-		case "test":
+	case "test":
 		log = slog.New(
 			slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}),
 		)

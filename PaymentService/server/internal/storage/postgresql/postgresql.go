@@ -10,7 +10,7 @@ import (
 )
 
 type Storage struct {
-	pool *pgxpool.Pool
+	pool   *pgxpool.Pool
 	looger *slog.Logger
 }
 
@@ -18,14 +18,14 @@ func New(connStr string, logger *slog.Logger) *Storage {
 	pool, err := pgxpool.New(context.Background(), connStr)
 	if err != nil {
 		logger.Error("Invalid connection to Db",
-			   slog.String("err", err.Error()),
+			slog.String("err", err.Error()),
 		)
 		return nil
 	}
 
 	if err := pool.Ping(context.Background()); err != nil {
 		logger.Error("Invalid ping to Db",
-				slog.String("err", err.Error()),
+			slog.String("err", err.Error()),
 		)
 		return nil
 	}
@@ -33,29 +33,29 @@ func New(connStr string, logger *slog.Logger) *Storage {
 	logger.Info("Db's running", slog.String("Addr", "0.0.0.0"), slog.Int("port", 5432))
 
 	return &Storage{
-		pool: pool,
+		pool:   pool,
 		looger: logger,
 	}
 }
 
 func (s *Storage) StoreCreatedPayment(ctx context.Context, payment *model.Payment) (err error) {
 	const op = "PaymentService.Storage.CreatePayment"
-	
+
 	query := `INSERT INTO payments
 			  (user_id, booking_id, amount, currency, method, payment_id, client_secret, status, response)
 			  VALUES (@user_id, @booking_id, @amount, @currency, @method, @payment_id, @client_secret, @status, @response) 
 			`
 
 	args := pgx.NamedArgs{
-		"user_id": 			payment.UserID,
-		"booking_id": 		payment.BookingID,
-		"currency":			payment.Currency,
-		"method":			payment.Method,
-		"payment_id":		payment.PaymentID,
-		"amount": 			payment.Amount,
-		"client_secret": 	payment.ClientSecret,
-		"status": 			payment.Status,
-		"response":			payment.Response,
+		"user_id":       payment.UserID,
+		"booking_id":    payment.BookingID,
+		"currency":      payment.Currency,
+		"method":        payment.Method,
+		"payment_id":    payment.PaymentID,
+		"amount":        payment.Amount,
+		"client_secret": payment.ClientSecret,
+		"status":        payment.Status,
+		"response":      payment.Response,
 	}
 
 	n, err := s.pool.Exec(ctx, query, args)
@@ -74,7 +74,7 @@ func (s *Storage) StoreCreatedPayment(ctx context.Context, payment *model.Paymen
 
 func (s *Storage) UpdatePayment(ctx context.Context, payment *model.Payment) (err error) {
 	const op = "PaymentService.Storage.UpdatePayment"
-	
+
 	query := `UPDATE payments
 			  SET status = @status,
 				  response = @response
@@ -83,9 +83,9 @@ func (s *Storage) UpdatePayment(ctx context.Context, payment *model.Payment) (er
 			`
 
 	args := pgx.NamedArgs{
-		"status": payment.Status,
-		"response": payment.Response,
-		"user_id": payment.UserID,
+		"status":     payment.Status,
+		"response":   payment.Response,
+		"user_id":    payment.UserID,
 		"booking_id": payment.BookingID,
 	}
 
@@ -107,7 +107,6 @@ func (s *Storage) UpdatePayment(ctx context.Context, payment *model.Payment) (er
 func (s *Storage) GetActivePayment(ctx context.Context, userID string) (payment model.Payment, err error) {
 	const op = "PaymentService.Storage.GetActivePayment"
 
-	
 	query := `SELECT user_id, booking_id, amount, currency, method, payment_id, client_secret, status, response
 			  FROM payments
 			  WHERE user_id = @user_id AND status = @status
@@ -139,7 +138,7 @@ func (s *Storage) GetActivePayment(ctx context.Context, userID string) (payment 
 
 		return payment, err
 	}
-	
+
 	s.looger.Info("Payment was given successfully from Db")
 
 	return payment, err
@@ -148,7 +147,6 @@ func (s *Storage) GetActivePayment(ctx context.Context, userID string) (payment 
 func (s *Storage) GetPaymentStatus(ctx context.Context, paymentID string) (status string, err error) {
 	const op = "PaymentService.Storage.GetPaymentStatus"
 
-	
 	query := `SELECT status
 			  FROM payments
 			  WHERE payment_id = @payment_id
@@ -169,7 +167,7 @@ func (s *Storage) GetPaymentStatus(ctx context.Context, paymentID string) (statu
 
 		return status, err
 	}
-	
+
 	s.looger.Info("Status was given successfully from Db")
 	return status, err
 }

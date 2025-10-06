@@ -38,15 +38,15 @@ func TestConvertBody(t *testing.T) {
 	gotBookings := ConvertBody(in)
 
 	wantBookings := &model.Booking{
-		UserID: in.UserId,
-		HotelID: in.HotelId,
-		RoomTypeID: in.RoomTypeId,
-		CheckIn: in.CheckIn,
-		CheckOut: in.CheckOut,
-		Nights: nightsGot,
-		Status: statusPending,
-		TotalAmount: in.Payment.TotalAmount,
-		Currency: in.Payment.Currency,
+		UserID:         in.UserId,
+		HotelID:        in.HotelId,
+		RoomTypeID:     in.RoomTypeId,
+		CheckIn:        in.CheckIn,
+		CheckOut:       in.CheckOut,
+		Nights:         nightsGot,
+		Status:         statusPending,
+		TotalAmount:    in.Payment.TotalAmount,
+		Currency:       in.Payment.Currency,
 		IdempotencyKey: idempotencyKey,
 	}
 

@@ -13,9 +13,9 @@ import (
 )
 
 type App struct {
-	logger *slog.Logger
+	logger     *slog.Logger
 	gRPCServer *grpc.Server
-	port int
+	port       int
 }
 
 func New(
@@ -34,9 +34,9 @@ func New(
 	hotelgrpc.Register(gRPCServer, hotelService)
 
 	return &App{
-		logger: logger,
+		logger:     logger,
 		gRPCServer: gRPCServer,
-		port: port,
+		port:       port,
 	}
 }
 
@@ -46,7 +46,7 @@ func (a *App) MustRun() {
 	}
 }
 
-func(a *App) Run() error {
+func (a *App) Run() error {
 	const op = "grpcapp.Run"
 
 	log := a.logger.With(

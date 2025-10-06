@@ -7,7 +7,6 @@ import (
 	"github.com/LashkaPashka/HotelService/server/internal/config"
 )
 
-
 type App struct {
 	GRPCServer *grpcapp.App
 }

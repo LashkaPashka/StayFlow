@@ -14,26 +14,26 @@ type Storage interface {
 }
 
 type HotelService struct {
-	cfg *config.Config
-	logger *slog.Logger
+	cfg     *config.Config
+	logger  *slog.Logger
 	storage Storage
 }
 
 func New(storage Storage, cfg *config.Config, logger *slog.Logger) *HotelService {
 	return &HotelService{
-		cfg: cfg,
-		logger: logger,
+		cfg:     cfg,
+		logger:  logger,
 		storage: storage,
 	}
 }
 
 func (h *HotelService) CheckAvailability(
-		ctx context.Context,
-		hotelId, 
-		roomTypeID, 
-		checkIn, 
-		checkOut string,
-	) (available bool, availableRooms int, err error)  {
+	ctx context.Context,
+	hotelId,
+	roomTypeID,
+	checkIn,
+	checkOut string,
+) (available bool, availableRooms int, err error) {
 	availableRooms, err = h.storage.GetAvailableRooms(ctx, hotelId, roomTypeID, checkIn, checkOut)
 	if err != nil {
 		h.logger.Error("Error storage of method GetAvailableRooms")
@@ -50,13 +50,13 @@ func (h *HotelService) CheckAvailability(
 }
 
 func (h *HotelService) ReserveRoom(
-		ctx context.Context,
-		hotelId, 
-		roomTypeID, 
-		checkIn, 
-		checkOut string,
-		roomsCount int,
-	) (success bool, err error) {
+	ctx context.Context,
+	hotelId,
+	roomTypeID,
+	checkIn,
+	checkOut string,
+	roomsCount int,
+) (success bool, err error) {
 	success, err = h.storage.BookedRoom(ctx, hotelId, roomTypeID, checkIn, checkOut, roomsCount)
 	if err != nil {
 		return false, err

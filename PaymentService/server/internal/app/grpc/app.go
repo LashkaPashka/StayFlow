@@ -16,9 +16,9 @@ import (
 const host = "0.0.0.0"
 
 type App struct {
-	logger *slog.Logger
+	logger     *slog.Logger
 	gRPCServer *grpc.Server
-	port string
+	port       string
 }
 
 func New(
@@ -30,17 +30,17 @@ func New(
 	gRPCServer := grpc.NewServer()
 
 	storage := postgresql.New(cfg.StoragePath, logger)
-	
+
 	paymentClient := paymentLib.New(cfg, logger)
-	
+
 	service := service.New(storage, paymentClient, cfg, logger)
 
 	payment.Register(service, gRPCServer)
 
 	return &App{
-		logger: logger,
+		logger:     logger,
 		gRPCServer: gRPCServer,
-		port: port,
+		port:       port,
 	}
 }
 
@@ -76,7 +76,7 @@ func (a *App) Stop() {
 	const op = "grpcapp.Stop"
 
 	a.logger.With(slog.String("op", op)).
-			Info("stopping gRPC server", slog.String("port", a.port))
+		Info("stopping gRPC server", slog.String("port", a.port))
 
 	a.gRPCServer.GracefulStop()
 }

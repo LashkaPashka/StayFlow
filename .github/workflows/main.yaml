@@ -1,0 +1,21 @@
+name: StayFlow WorkFlow
+on: [push]
+
+jobs:
+  build-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      
+      - name: Setup Go 1.25
+        uses: actions/setup-go@v5
+      
+      - name: Display Go version
+        run: go version
+      
+      - name: Go Format
+        run: gofmt -s -w . && git diff --exit-code
+      
+      - name: Go Vet
+        run: go vet ./...

@@ -39,18 +39,18 @@ func New(
 	logger *slog.Logger,
 ) *Service {
 	return &Service{
-		Storage: storage,
+		Storage:       storage,
 		PaymentClient: paymentClient,
-		config: config,
-		logger: logger,
+		config:        config,
+		logger:        logger,
 	}
 }
 
-func (s *Service) CreatePayment(ctx context.Context, payment *model.Payment) (paymentID, url string,err error) {
+func (s *Service) CreatePayment(ctx context.Context, payment *model.Payment) (paymentID, url string, err error) {
 	const op = "PaymentService.service.CreatePayemnt"
-	
+
 	publishKey := s.config.StripePublish
-	
+
 	// 1. Search user which exist payment
 	existPayment, _ := s.Storage.GetActivePayment(ctx, payment.UserID)
 	if len(existPayment.UserID) > 0 {
@@ -76,7 +76,7 @@ func (s *Service) CreatePayment(ctx context.Context, payment *model.Payment) (pa
 	// 3. Update field clientSecret && paymentID in model Payment
 	payment.ClientSecret = sessionResult.ClientSecret
 	payment.PaymentID = sessionResult.ID
-	
+
 	// 4. Save model payment in Db
 	if err = s.Storage.StoreCreatedPayment(ctx, payment); err != nil {
 		s.logger.Error("Invalid store payment",
@@ -86,7 +86,7 @@ func (s *Service) CreatePayment(ctx context.Context, payment *model.Payment) (pa
 
 		return "", "", err
 	}
-	
+
 	go s.VerifyPayment(payment)
 
 	return sessionResult.ID, sessionResult.URL, err
@@ -114,7 +114,7 @@ func (s *Service) VerifyPayment(payment *model.Payment) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 
 	_ = cancel
-	
+
 	<-ctx.Done()
 
 	paymentRes, err := s.PaymentClient.GetPaymentStatus(payment.PaymentID)
@@ -135,6 +135,6 @@ func (s *Service) VerifyPayment(payment *model.Payment) {
 	}
 
 	if err = s.Storage.UpdatePayment(context.Background(), payment); err != nil {
-		os.Exit(1) 
+		os.Exit(1)
 	}
 }

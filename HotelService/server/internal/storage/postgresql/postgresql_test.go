@@ -10,27 +10,28 @@ import (
 )
 
 type TestHotel struct {
-	HotelID string `json:"hotel_id"`
+	HotelID    string `json:"hotel_id"`
 	RoomTypeID string `json:"room_type_id"`
-	CheckIn string `json:"check_in"`
-	CheckOut string `json:"check_out"`
-	RoomsCount int  `json:"rooms_count"`
+	CheckIn    string `json:"check_in"`
+	CheckOut   string `json:"check_out"`
+	RoomsCount int    `json:"rooms_count"`
 }
 
 var payload = &TestHotel{
-	HotelID: "11111111-1111-1111-1111-111111111111",
+	HotelID:    "11111111-1111-1111-1111-111111111111",
 	RoomTypeID: "aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-	CheckIn: "2025-09-28",
-	CheckOut: "2025-10-05",
+	CheckIn:    "2025-09-28",
+	CheckOut:   "2025-10-05",
 	RoomsCount: 5,
 }
 
 const connStr = "postgres://postgres:root@localhost:5432/postgres"
+
 var st *Storage
 
 func TestMain(m *testing.M) {
 	logger := setupLogger("local")
-	
+
 	st = New(connStr, logger)
 
 	m.Run()

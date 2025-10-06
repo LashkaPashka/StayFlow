@@ -25,25 +25,24 @@ var (
 var st *Storage
 
 var in = &bookingsV1.CreateBookingRequest{
-	UserId: userID,
-	HotelId: hotelID,
-	RoomTypeId: roomTypeId,
-	CheckIn: "2025-09-28",
-	CheckOut: "2025-10-05",
-	RoomsCount: 2,
+	UserId:         userID,
+	HotelId:        hotelID,
+	RoomTypeId:     roomTypeId,
+	CheckIn:        "2025-09-28",
+	CheckOut:       "2025-10-05",
+	RoomsCount:     2,
 	IdempotencyKey: idempotencyKey,
 	Payment: &bookingsV1.PaymentInfo{
-		Method: "card",
-		Token: "tol_test_123",
+		Method:      "card",
+		Token:       "tol_test_123",
 		TotalAmount: 10000.0,
-		Currency: "RUB",
+		Currency:    "RUB",
 	},
 }
 
 func TestMain(m *testing.M) {
 	logger := setupLogger("local")
 
-	
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -59,13 +58,12 @@ func TestMain(m *testing.M) {
 	}
 
 	st = &Storage{
-		Pool: pool,
+		Pool:   pool,
 		Logger: logger,
 	}
 
 	m.Run()
 }
-
 
 func TestCreateBooking(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -94,16 +92,16 @@ func TestUpdateBooking(t *testing.T) {
 	}
 
 	wantBookings := model.Booking{
-		UserID: userID,
-		HotelID: hotelID,
-		RoomTypeID: roomTypeId,
-		CheckIn: in.CheckIn,
-		CheckOut: in.CheckOut,
-		Nights: 4,
-		RoomsCount: int(in.RoomsCount),
-		Status: status,
-		TotalAmount: in.Payment.TotalAmount,
-		Currency: in.Payment.Currency,
+		UserID:         userID,
+		HotelID:        hotelID,
+		RoomTypeID:     roomTypeId,
+		CheckIn:        in.CheckIn,
+		CheckOut:       in.CheckOut,
+		Nights:         4,
+		RoomsCount:     int(in.RoomsCount),
+		Status:         status,
+		TotalAmount:    in.Payment.TotalAmount,
+		Currency:       in.Payment.Currency,
 		IdempotencyKey: idempotencyKey,
 	}
 
