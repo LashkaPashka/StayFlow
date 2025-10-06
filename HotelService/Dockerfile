@@ -8,7 +8,6 @@ RUN go mod download
 
 COPY . .
 
-
 RUN go build -o hotel-service ./server/cmd/hotel
 
 FROM gcr.io/distroless/base-debian12

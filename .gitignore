@@ -1,4 +1,5 @@
 local.yaml
+prod.yaml
 .env
 *_test.go
 .gitignore
