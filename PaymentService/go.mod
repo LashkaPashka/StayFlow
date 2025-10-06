@@ -5,7 +5,6 @@ go 1.25.1
 require (
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/jackc/pgx/v5 v5.7.6
-	github.com/stripe/stripe-go v70.15.0+incompatible
 	github.com/stripe/stripe-go/v78 v78.12.0
 	google.golang.org/grpc v1.75.1
 	google.golang.org/protobuf v1.36.6

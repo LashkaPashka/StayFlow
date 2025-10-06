@@ -30,6 +30,8 @@ func New(connStr string, logger *slog.Logger) *Storage {
 		return nil
 	}
 
+	logger.Info("Db's running", slog.String("Addr", "0.0.0.0"), slog.Int("port", 5432))
+
 	return &Storage{
 		pool: pool,
 		looger: logger,

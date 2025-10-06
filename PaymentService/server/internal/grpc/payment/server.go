@@ -11,6 +11,7 @@ import (
 
 type Service interface {
 	CreatePayment(ctx context.Context, payment *model.Payment) (paymentID, url string,err error)
+	GetPaymentStatus(ctx context.Context, paymentID string) (status string, err error)
 }
 
 type serverAPI struct {
@@ -45,7 +46,12 @@ func (s *serverAPI) GetPaymentStatus(
 	in *paymentV1.GetPaymentStatusRequest,
 ) (*paymentV1.GetPaymentStatusReponse, error){
 
-	return &paymentV1.GetPaymentStatusReponse{Status: "PENDING"}, nil
+	status, err := s.service.GetPaymentStatus(ctx, in.PaymentId)
+	if err != nil {
+		return &paymentV1.GetPaymentStatusReponse{}, err
+	}
+
+	return &paymentV1.GetPaymentStatusReponse{Status: status}, nil
 }
 
 func (s *serverAPI) RefundPayment(

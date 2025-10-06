@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"os"
+	"time"
 
 	"github.com/LashkaPashka/StayFlow/PaymentService/server/internal/config"
 	"github.com/LashkaPashka/StayFlow/PaymentService/server/internal/lib/encode"
@@ -84,37 +86,56 @@ func (s *Service) CreatePayment(ctx context.Context, payment *model.Payment) (pa
 		return "", "", err
 	}
 	
+	go s.VerifyPayment(payment)
+
 	return sessionResult.ID, sessionResult.URL, err
 }
 
-func (s *Service) VerifyPayment(ctx context.Context, payment *model.Payment) (err error) {
-	const op = "PaymentService.service.VerifyPayment"
+func (s *Service) GetPaymentStatus(ctx context.Context, paymentID string) (status string, err error) {
+	const op = "PaymentService.service.GetPaymentStatus"
 
-	existPayment, err := s.Storage.GetActivePayment(ctx, payment.UserID)
-	if len(existPayment.UserID) > 0 || err != nil {
-		s.logger.Error("no active payment exist")
+	sessionRes, err := s.PaymentClient.GetPaymentStatus(paymentID)
+	if err != nil {
+		s.logger.Error("Invalid get payment",
+			slog.String("op", op),
+			slog.String("err", err.Error()),
+		)
 
-		return errors.New("no exist payment")
+		return status, err
 	}
 
-	paymentRes, err := s.PaymentClient.GetPaymentStatus(existPayment.PaymentID)
+	status = string(sessionRes.Status)
+
+	return status, err
+}
+
+func (s *Service) VerifyPayment(payment *model.Payment) {
+	const op = "PaymentService.service.VerifyPayment"
+
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+
+	_ = cancel
+	
+	<-ctx.Done()
+
+	paymentRes, err := s.PaymentClient.GetPaymentStatus(payment.PaymentID)
 	if err != nil {
 		s.logger.Error("error getPaymentStatus",
 			slog.String("op", op),
 			slog.String("err", err.Error()),
 		)
+
+		os.Exit(1)
 	}
 
 	payment.Response = string(encode.Encode(paymentRes))
 	payment.Status = model.PaymentStatusFailed
 
-	if paymentRes.Status == "succeeded" {
+	if paymentRes.Status == "complete" {
 		payment.Status = model.PaymentStatusConfirmed
 	}
 
-	if err = s.Storage.UpdatePayment(ctx, payment); err != nil {
-		return err
+	if err = s.Storage.UpdatePayment(context.Background(), payment); err != nil {
+		os.Exit(1) 
 	}
-
-	return err
 }
