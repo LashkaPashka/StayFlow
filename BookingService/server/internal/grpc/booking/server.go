@@ -12,7 +12,7 @@ import (
 )
 
 type BookingService interface {
-	CreateBooking(ctx context.Context, booking model.Booking) (booking_id string, status string)
+	CreateBooking(ctx context.Context, booking model.Booking) (url, booking_id, status string)
 	ConfirmBooking(ctx context.Context, booking_id, payment_id string) model.Booking
 	CancelBooking(ctx context.Context, booking_id, paymendID, user_id, reason string) string
 	GetBooking(ctx context.Context, booking_id, user_id string) model.Booking
@@ -36,12 +36,13 @@ func (s *serverAPI) CreateBooking(
 	booking := convertbody.ConvertBody(in)
 
 	// TODO: call CreateBooking from bookingService
-	booking_id, status := s.bookingService.CreateBooking(ctx, *booking)
+	url, booking_id, status := s.bookingService.CreateBooking(ctx, booking)
 	if strings.Compare(booking_id, status) == 0 {
 		return nil, errors.New("error inside bookingService")
 	}
 
 	return &bookingsV1.CreateBookingsResponse{
+		Url: url,
 		BookingId: booking_id,
 		Status: status,
 	}, nil

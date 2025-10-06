@@ -17,7 +17,7 @@ type Clienter interface {
 	CheckRoomAvailability(addr string, booking model.Booking) (available bool, availableRooms int)
 	ReserveRoom(addr string, booking model.Booking) (success bool, err error)
 	ReleaseRoom(addr string, booking model.Booking) (success bool, err error) 
-	CreatePayment(addr, booking_id string, payment model.PaymentInfo) (paymentID string, status string)
+	CreatePayment(addr string, payment model.PaymentInfo) (url, paymentID, status string)
 	GetPaymentStatus(addr string, paymendID string) (status string)
 	RefundPayment(addr string, paymendID string) (success bool, err error)
 }
@@ -70,51 +70,50 @@ func New(
 	}
 }
 
-func (b *BookingService) CreateBooking(ctx context.Context, booking model.Booking) (booking_id string, status string) {
+func (b *BookingService) CreateBooking(ctx context.Context, booking model.Booking) (url, booking_id, status string) {
 	const op = "BookingService.service.bookings.CreateBooking"
 
-	// TODO: query on HotelService
+	// 1. query on HotelService
 	available, avaiableRooms := b.grpcclienter.CheckRoomAvailability(b.cfg.AddrHotelService, booking)
 
 	if !available && avaiableRooms < booking.RoomsCount {
-		return "aaa", "FAILED"
+		return "", "", "FAILED"
 	}
 
-	// TODO: if hotelservice turned true then create booking (STATUS PENDING)
+	// 2. if hotelservice turned true then create booking (STATUS PENDING)
 	booking_id, err := b.bookingSaver.SaveBooking(ctx, booking)
 	if err != nil {
 		b.logger.Error("Invalid save booking in PostgreSQL", slog.String("op", op))
-		return "aaa", "FAILED"
+		return "", "", "FAILED"
 	}
 	
-	// TODO: create reserveRoom
+	// 3. create reserveRoom
 	success, err := b.grpcclienter.ReserveRoom(b.cfg.AddrHotelService, booking)
 	if err != nil {
 		b.logger.Error("Invalid reservedRoom",
 			slog.String("op", op),
 			slog.String("err", err.Error()),
 		)
-		return "aaa", "FAILED"
+		return "aaa", "", "FAILED"
 	}	
 
 	if !success {
 		b.logger.Error("Error reserved room", slog.String("op", op))
-		return "aaa", "FAILED"
+		return "", "", "FAILED"
 	}
 
-	// TODO: create payment
-	//paymentID, statusPayment := b.grpcclienter.CreatePayment(b.cfg.StoragePath, booking_id, model.PaymentInfo{})
-	
-	// TODO: check result
-	//var status string
-	// switch statusPayment {
-	// 	case confirmed:
-	// 		status = b.ConfirmBooking(booking_id, paymentID).Status
-	// 	case pending:
-	// 		status = b.CancelBooking(booking_id, paymentID, booking.UserID, "Pending")
-	// }
+	// 4. create payment
+	url, _, status = b.grpcclienter.CreatePayment(b.cfg.StoragePath, model.PaymentInfo{
+		UserID: booking.UserID,
+		BookingID: booking_id,
+		TotalAmount: booking.TotalAmount,
+		Currency: booking.Currency,
+		Method: "card",
+		Token: "tok_1QZ3Lh2eZvKYlo2CwZz9V3nb",
+		IdempotencyKey: booking.IdempotencyKey,
+	})
 
-	return booking_id, statusPending
+	return url, booking_id, status
 }
 
 func (b *BookingService) ConfirmBooking(ctx context.Context, booking_id, payment_id string) model.Booking {

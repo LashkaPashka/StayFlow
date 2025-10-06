@@ -11,17 +11,19 @@ service PaymentService {
 }
 
 message CreatePaymentRequest {
-    string bookind_id = 1;
-    double amount = 2;
-    string currency = 3;
-    string method = 4;
-    string token = 5;
-    string idempotency_key = 6;
+    string booking_id = 1;
+    string user_id = 2;
+    double amount = 3;
+    string currency = 4;
+    string method = 5;
+    string token = 6;
+    string idempotency_key = 7;
 }
 
 message CreatePaymentResponse {
-    string payment_id = 1;
-    string status = 2;
+    string url = 1;
+    string payment_id = 2;
+    string status = 3;
 }
 
 message GetPaymentStatusRequest {

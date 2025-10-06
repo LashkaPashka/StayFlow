@@ -31,8 +31,9 @@ message PaymentInfo {
 }
 
 message CreateBookingsResponse {
-    string booking_id = 1;
-    string status = 2;
+    string url = 1;
+    string booking_id = 2;
+    string status = 3;
 }
 
 message ConfirmBookingRequest {

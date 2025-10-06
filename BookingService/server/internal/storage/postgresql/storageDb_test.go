@@ -73,7 +73,7 @@ func TestCreateBooking(t *testing.T) {
 
 	bookings := convertbody.ConvertBody(in)
 
-	booking_id, err := st.SaveBooking(ctx, *bookings)
+	booking_id, err := st.SaveBooking(ctx, bookings)
 	if err != nil {
 		t.Fatalf("Error: %v", err)
 	}

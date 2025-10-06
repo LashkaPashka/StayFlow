@@ -191,8 +191,9 @@ func (x *PaymentInfo) GetCurrency() string {
 
 type CreateBookingsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	BookingId     string                 `protobuf:"bytes,1,opt,name=booking_id,json=bookingId,proto3" json:"booking_id,omitempty"`
-	Status        string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
+	Url           string                 `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
+	BookingId     string                 `protobuf:"bytes,2,opt,name=booking_id,json=bookingId,proto3" json:"booking_id,omitempty"`
+	Status        string                 `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -225,6 +226,13 @@ func (x *CreateBookingsResponse) ProtoReflect() protoreflect.Message {
 // Deprecated: Use CreateBookingsResponse.ProtoReflect.Descriptor instead.
 func (*CreateBookingsResponse) Descriptor() ([]byte, []int) {
 	return file_booking_booking_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *CreateBookingsResponse) GetUrl() string {
+	if x != nil {
+		return x.Url
+	}
+	return ""
 }
 
 func (x *CreateBookingsResponse) GetBookingId() string {
@@ -637,11 +645,12 @@ const file_booking_booking_proto_rawDesc = "" +
 	"\x06method\x18\x01 \x01(\tR\x06method\x12\x14\n" +
 	"\x05token\x18\x02 \x01(\tR\x05token\x12!\n" +
 	"\ftotal_amount\x18\x03 \x01(\x01R\vtotalAmount\x12\x1a\n" +
-	"\bcurrency\x18\x04 \x01(\tR\bcurrency\"O\n" +
-	"\x16CreateBookingsResponse\x12\x1d\n" +
+	"\bcurrency\x18\x04 \x01(\tR\bcurrency\"a\n" +
+	"\x16CreateBookingsResponse\x12\x10\n" +
+	"\x03url\x18\x01 \x01(\tR\x03url\x12\x1d\n" +
 	"\n" +
-	"booking_id\x18\x01 \x01(\tR\tbookingId\x12\x16\n" +
-	"\x06status\x18\x02 \x01(\tR\x06status\"U\n" +
+	"booking_id\x18\x02 \x01(\tR\tbookingId\x12\x16\n" +
+	"\x06status\x18\x03 \x01(\tR\x06status\"U\n" +
 	"\x15ConfirmBookingRequest\x12\x1d\n" +
 	"\n" +
 	"booking_id\x18\x01 \x01(\tR\tbookingId\x12\x1d\n" +

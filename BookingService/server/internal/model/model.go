@@ -19,9 +19,11 @@ type Booking struct {
 }
 
 type PaymentInfo struct {
-	TotalAmount float64 	`json:"total_amount"`
-	Currency string 		`json:"currency"`
-	Method string 			`json:"method"`
-	Token string 			`json:"token"`
-	IdempotencyKey string 	`json:"idempotency_key"`
+	TotalAmount		float64 	`json:"total_amount"`
+	BookingID		string		`json:"booking_id"`
+	UserID			string		`json:"user_id"`
+	Currency 		string 		`json:"currency"`
+	Method 			string 		`json:"method"`
+	Token 			string 		`json:"token"`
+	IdempotencyKey 	string 		`json:"idempotency_key"`
 }

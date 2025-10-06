@@ -51,9 +51,9 @@ func TestCreateBooking(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	booking_id, status := service.CreateBooking(ctx, *payloadBooking)
+	url, paymentID, status := service.CreateBooking(ctx, payloadBooking)
 
-	if len(booking_id) == 0 {
+	if len(paymentID) == 0 {
 		t.Fatalf("Length booking_id equal zero")
 	}
 
@@ -62,7 +62,7 @@ func TestCreateBooking(t *testing.T) {
 		t.Fatalf("status not want value")
 	}
 
-	t.Log(booking_id, status)
+	t.Log(url, paymentID, status)
 }
 
 

@@ -132,15 +132,13 @@ func (c *Client) ReleaseRoom(addr string, booking model.Booking) (success bool, 
 	return resp.Success, nil
 }
 
-
-
-func (c *Client) CreatePayment(addr, booking_id string, payment model.PaymentInfo) (string, string) {
+func (c *Client) CreatePayment(addr string, payment model.PaymentInfo) (url, paymentID, status string) {
 	conn, err := grpc.NewClient(addr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
 		c.logger.Error("Invalid create connection")
-		return "", ""
+		return "", "", ""
 	}
 	defer conn.Close()
 
@@ -150,6 +148,8 @@ func (c *Client) CreatePayment(addr, booking_id string, payment model.PaymentInf
 	defer cancel()
 
 	resp, err := client.CreatePayment(ctx, &paymentV1.CreatePaymentRequest{
+		BookingId: payment.BookingID,
+		UserId: payment.UserID,
 		Amount: payment.TotalAmount,
 		Currency: payment.Currency,
 		Method: payment.Method,
@@ -158,10 +158,10 @@ func (c *Client) CreatePayment(addr, booking_id string, payment model.PaymentInf
 	})
 	if err != nil {
 		c.logger.Error("Invalid grpc query")
-		return "", ""
+		return "", "", ""
 	}
 
-	return resp.PaymentId, resp.Status
+	return resp.Url, resp.PaymentId, resp.Status
 }
 
 func (c *Client) GetPaymentStatus(addr string, paymendID string) (status string) {

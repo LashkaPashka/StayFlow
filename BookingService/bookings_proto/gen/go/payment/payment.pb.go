@@ -23,12 +23,13 @@ const (
 
 type CreatePaymentRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	BookindId      string                 `protobuf:"bytes,1,opt,name=bookind_id,json=bookindId,proto3" json:"bookind_id,omitempty"`
-	Amount         float64                `protobuf:"fixed64,2,opt,name=amount,proto3" json:"amount,omitempty"`
-	Currency       string                 `protobuf:"bytes,3,opt,name=currency,proto3" json:"currency,omitempty"`
-	Method         string                 `protobuf:"bytes,4,opt,name=method,proto3" json:"method,omitempty"`
-	Token          string                 `protobuf:"bytes,5,opt,name=token,proto3" json:"token,omitempty"`
-	IdempotencyKey string                 `protobuf:"bytes,6,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
+	BookingId      string                 `protobuf:"bytes,1,opt,name=booking_id,json=bookingId,proto3" json:"booking_id,omitempty"`
+	UserId         string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Amount         float64                `protobuf:"fixed64,3,opt,name=amount,proto3" json:"amount,omitempty"`
+	Currency       string                 `protobuf:"bytes,4,opt,name=currency,proto3" json:"currency,omitempty"`
+	Method         string                 `protobuf:"bytes,5,opt,name=method,proto3" json:"method,omitempty"`
+	Token          string                 `protobuf:"bytes,6,opt,name=token,proto3" json:"token,omitempty"`
+	IdempotencyKey string                 `protobuf:"bytes,7,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -63,9 +64,16 @@ func (*CreatePaymentRequest) Descriptor() ([]byte, []int) {
 	return file_payment_payment_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *CreatePaymentRequest) GetBookindId() string {
+func (x *CreatePaymentRequest) GetBookingId() string {
 	if x != nil {
-		return x.BookindId
+		return x.BookingId
+	}
+	return ""
+}
+
+func (x *CreatePaymentRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
 	}
 	return ""
 }
@@ -107,8 +115,9 @@ func (x *CreatePaymentRequest) GetIdempotencyKey() string {
 
 type CreatePaymentResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PaymentId     string                 `protobuf:"bytes,1,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
-	Status        string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
+	Url           string                 `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
+	PaymentId     string                 `protobuf:"bytes,2,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
+	Status        string                 `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -141,6 +150,13 @@ func (x *CreatePaymentResponse) ProtoReflect() protoreflect.Message {
 // Deprecated: Use CreatePaymentResponse.ProtoReflect.Descriptor instead.
 func (*CreatePaymentResponse) Descriptor() ([]byte, []int) {
 	return file_payment_payment_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *CreatePaymentResponse) GetUrl() string {
+	if x != nil {
+		return x.Url
+	}
+	return ""
 }
 
 func (x *CreatePaymentResponse) GetPaymentId() string {
@@ -337,19 +353,21 @@ var File_payment_payment_proto protoreflect.FileDescriptor
 
 const file_payment_payment_proto_rawDesc = "" +
 	"\n" +
-	"\x15payment/payment.proto\x12\apayment\"\xc0\x01\n" +
+	"\x15payment/payment.proto\x12\apayment\"\xd9\x01\n" +
 	"\x14CreatePaymentRequest\x12\x1d\n" +
 	"\n" +
-	"bookind_id\x18\x01 \x01(\tR\tbookindId\x12\x16\n" +
-	"\x06amount\x18\x02 \x01(\x01R\x06amount\x12\x1a\n" +
-	"\bcurrency\x18\x03 \x01(\tR\bcurrency\x12\x16\n" +
-	"\x06method\x18\x04 \x01(\tR\x06method\x12\x14\n" +
-	"\x05token\x18\x05 \x01(\tR\x05token\x12'\n" +
-	"\x0fidempotency_key\x18\x06 \x01(\tR\x0eidempotencyKey\"N\n" +
-	"\x15CreatePaymentResponse\x12\x1d\n" +
+	"booking_id\x18\x01 \x01(\tR\tbookingId\x12\x17\n" +
+	"\auser_id\x18\x02 \x01(\tR\x06userId\x12\x16\n" +
+	"\x06amount\x18\x03 \x01(\x01R\x06amount\x12\x1a\n" +
+	"\bcurrency\x18\x04 \x01(\tR\bcurrency\x12\x16\n" +
+	"\x06method\x18\x05 \x01(\tR\x06method\x12\x14\n" +
+	"\x05token\x18\x06 \x01(\tR\x05token\x12'\n" +
+	"\x0fidempotency_key\x18\a \x01(\tR\x0eidempotencyKey\"`\n" +
+	"\x15CreatePaymentResponse\x12\x10\n" +
+	"\x03url\x18\x01 \x01(\tR\x03url\x12\x1d\n" +
 	"\n" +
-	"payment_id\x18\x01 \x01(\tR\tpaymentId\x12\x16\n" +
-	"\x06status\x18\x02 \x01(\tR\x06status\"8\n" +
+	"payment_id\x18\x02 \x01(\tR\tpaymentId\x12\x16\n" +
+	"\x06status\x18\x03 \x01(\tR\x06status\"8\n" +
 	"\x17GetPaymentStatusRequest\x12\x1d\n" +
 	"\n" +
 	"payment_id\x18\x01 \x01(\tR\tpaymentId\"1\n" +

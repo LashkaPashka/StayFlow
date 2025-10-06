@@ -30,10 +30,10 @@ const (
 	statusPending = "PENDING"
 )
 
-func ConvertBody(in *bookingsV1.CreateBookingRequest) *model.Booking {
+func ConvertBody(in *bookingsV1.CreateBookingRequest) model.Booking {
 	nights := ParseDate(in.CheckIn, in.CheckOut)
 
-	return &model.Booking{
+	return model.Booking{
 		UserID: in.UserId,
 		HotelID: in.HotelId,
 		RoomTypeID: in.RoomTypeId,
