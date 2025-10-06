@@ -20,6 +20,7 @@ type PaymentClient interface {
 
 type Storage interface {
 	GetActivePayment(ctx context.Context, userID string) (payment model.Payment, err error)
+	GetPaymentStatus(ctx context.Context, paymentID string) (status string, err error)
 	StoreCreatedPayment(ctx context.Context, payment *model.Payment) (err error)
 	UpdatePayment(ctx context.Context, payment *model.Payment) (err error)
 }
@@ -94,7 +95,7 @@ func (s *Service) CreatePayment(ctx context.Context, payment *model.Payment) (pa
 func (s *Service) GetPaymentStatus(ctx context.Context, paymentID string) (status string, err error) {
 	const op = "PaymentService.service.GetPaymentStatus"
 
-	sessionRes, err := s.PaymentClient.GetPaymentStatus(paymentID)
+	status, err = s.Storage.GetPaymentStatus(ctx, paymentID)
 	if err != nil {
 		s.logger.Error("Invalid get payment",
 			slog.String("op", op),
@@ -103,8 +104,6 @@ func (s *Service) GetPaymentStatus(ctx context.Context, paymentID string) (statu
 
 		return status, err
 	}
-
-	status = string(sessionRes.Status)
 
 	return status, err
 }

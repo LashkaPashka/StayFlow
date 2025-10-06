@@ -144,3 +144,32 @@ func (s *Storage) GetActivePayment(ctx context.Context, userID string) (payment 
 
 	return payment, err
 }
+
+func (s *Storage) GetPaymentStatus(ctx context.Context, paymentID string) (status string, err error) {
+	const op = "PaymentService.Storage.GetPaymentStatus"
+
+	
+	query := `SELECT status
+			  FROM payments
+			  WHERE payment_id = @payment_id
+			  ORDER BY created_at DESC
+			  LIMIT 1
+			`
+
+	args := pgx.NamedArgs{
+		"payment_id": paymentID,
+	}
+
+	err = s.pool.QueryRow(ctx, query, args).Scan(&status)
+	if err != nil {
+		s.looger.Error("Invalid getPaymentStatus",
+			slog.String("op", op),
+			slog.String("err", err.Error()),
+		)
+
+		return status, err
+	}
+	
+	s.looger.Info("Status was given successfully from Db")
+	return status, err
+}

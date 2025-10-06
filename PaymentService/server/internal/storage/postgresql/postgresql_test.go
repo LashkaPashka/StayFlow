@@ -68,6 +68,20 @@ func TestGetActivePayment(t *testing.T) {
 	t.Log("Ok!")
 }
 
+func TestGetStatusPayment(t *testing.T) {
+	status, err := st.GetPaymentStatus(context.Background(), "cs_test_a1x2cEZRBMzLhZ5GWogIXoIW7Nk9yyt8ro5xlgQmvJMsxJUD7Q4YtVx6Mj")
+	if err != nil {
+		t.Fatal("Test #4: error - GetPaymentStatus")
+	}
+
+	if len(status) == 0 {
+		t.Fatal("Test #4: error - length status equal zero")
+	} 
+
+	t.Log(status)
+}
+
+
 func setupLogger(env string) *slog.Logger {
 	var log *slog.Logger
 
