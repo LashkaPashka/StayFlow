@@ -5,6 +5,7 @@ on:
   pull_request:
     branches: [ main, master ]
 
+
 env:
   REGISTRY: "lashkapashka"
   IMAGE_NAME: "crud-server"
