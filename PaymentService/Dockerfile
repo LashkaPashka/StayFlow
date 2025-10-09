@@ -8,7 +8,6 @@ RUN go mod download
 
 COPY . .
 
-
 RUN go build -o payment-service ./server/cmd/payment
 
 FROM gcr.io/distroless/base-debian12

@@ -22,7 +22,7 @@ var payload = &TestHotel{
 	RoomTypeID: "aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
 	CheckIn:    "2025-09-28",
 	CheckOut:   "2025-10-05",
-	RoomsCount: 5,
+	RoomsCount: 3,
 }
 
 const connStr = "postgres://postgres:root@localhost:5432/postgres"
