@@ -6,7 +6,7 @@ CREATE TABLE bookings (
   check_in DATE NOT NULL,
   check_out DATE NOT NULL,
   nights INT NOT NULL,
-  rooms_count INT NOT NULL
+  rooms_count INT NOT NULL,
   total_amount NUMERIC(12,2) NOT NULL,
   currency VARCHAR(3) DEFAULT 'USD',
   status VARCHAR(20) NOT NULL CHECK (status IN ('PENDING','CONFIRMED','CANCELLED','FAILED')),

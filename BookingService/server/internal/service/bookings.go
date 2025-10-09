@@ -103,7 +103,7 @@ func (b *BookingService) CreateBooking(ctx context.Context, booking model.Bookin
 	}
 
 	// 4. create payment
-	url, _, status = b.grpcclienter.CreatePayment(b.cfg.StoragePath, model.PaymentInfo{
+	url, _, status = b.grpcclienter.CreatePayment(b.cfg.AddrPaymentService, model.PaymentInfo{
 		UserID:         booking.UserID,
 		BookingID:      booking_id,
 		TotalAmount:    booking.TotalAmount,
@@ -133,7 +133,7 @@ func (b *BookingService) ConfirmBooking(ctx context.Context, booking_id, payment
 func (b *BookingService) CancelBooking(ctx context.Context, booking_id, paymendID, user_id, reason string) string {
 	const op = "BookingService.service.bookings.CancelBooking"
 
-	success, err := b.grpcclienter.RefundPayment(b.cfg.StoragePath, paymendID)
+	success, err := b.grpcclienter.RefundPayment(b.cfg.AddrPaymentService, paymendID)
 	if err != nil {
 		b.logger.Error("Invalid reserveRoom",
 			slog.String("op", op),

@@ -133,6 +133,9 @@ func (c *Client) ReleaseRoom(addr string, booking model.Booking) (success bool, 
 }
 
 func (c *Client) CreatePayment(addr string, payment model.PaymentInfo) (url, paymentID, status string) {
+	const op = "BookingService.server.grpcclient.CreatePayment"
+
+	
 	conn, err := grpc.NewClient(addr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
@@ -157,7 +160,11 @@ func (c *Client) CreatePayment(addr string, payment model.PaymentInfo) (url, pay
 		IdempotencyKey: payment.IdempotencyKey,
 	})
 	if err != nil {
-		c.logger.Error("Invalid grpc query")
+		c.logger.Error("Invalid grpc query",
+			slog.String("op", op),
+			slog.String("err", err.Error()),
+		)
+
 		return "", "", ""
 	}
 
@@ -165,6 +172,8 @@ func (c *Client) CreatePayment(addr string, payment model.PaymentInfo) (url, pay
 }
 
 func (c *Client) GetPaymentStatus(addr string, paymendID string) (status string) {
+	const op = "BookingService.server.grpcclient.GetPaymentStatus"
+
 	conn, err := grpc.NewClient(addr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
@@ -183,7 +192,11 @@ func (c *Client) GetPaymentStatus(addr string, paymendID string) (status string)
 		PaymentId: paymendID,
 	})
 	if err != nil {
-		c.logger.Error("Invalid grpc query")
+		c.logger.Error("Invalid grpc query",
+			slog.String("op", op),
+			slog.String("err", err.Error()),
+		)
+
 		return "Failed"
 	}
 
@@ -191,6 +204,9 @@ func (c *Client) GetPaymentStatus(addr string, paymendID string) (status string)
 }
 
 func (c *Client) RefundPayment(addr string, paymendID string) (success bool, err error) {
+	const op = "BookingService.server.grpcclient.RefundPayment"
+
+	
 	conn, err := grpc.NewClient(addr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
@@ -209,7 +225,11 @@ func (c *Client) RefundPayment(addr string, paymendID string) (success bool, err
 		PaymentId: paymendID,
 	})
 	if err != nil {
-		c.logger.Error("Invalid grpc query")
+		c.logger.Error("Invalid grpc query",
+			slog.String("op", op),
+			slog.String("err", err.Error()),
+		)
+		
 		return false, err
 	}
 

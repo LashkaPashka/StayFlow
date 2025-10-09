@@ -20,7 +20,7 @@ services:
       dockerfile: ./Dockerfile
     image: booking_img
     volumes:
-      - ./BookingService/server/config:/app/config
+      - ${PATH_CONFIG_BookingService_HOST}:${PATH_CONFIG_CONTAINER}
     environment:
       CONFIG: ${CONFIG}
     restart: always
@@ -41,7 +41,7 @@ services:
       dockerfile: ./Dockerfile
     image: hotel_img
     volumes:
-      - ./HotelService/server/config:/app/config
+      - ${PATH_CONFIG_HotelService_HOST}:${PATH_CONFIG_CONTAINER}
     environment:
       CONFIG: ${CONFIG}
     restart: always
@@ -60,7 +60,7 @@ services:
       dockerfile: ./Dockerfile
     image: payment_img
     volumes:
-      - ./PaymentService/server/config:/app/config
+      - ${PATH_CONFIG_PaymentService_HOST}:${PATH_CONFIG_CONTAINER}
     environment:
       CONFIG: ${CONFIG}
     restart: always
