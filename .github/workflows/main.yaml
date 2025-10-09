@@ -5,7 +5,6 @@ on:
   pull_request:
     branches: [ main, master ]
 
-
 env:
   REGISTRY: "lashkapashka"
   IMAGE_NAME: "crud-server"
@@ -59,8 +58,9 @@ jobs:
           host: "${{ secrets.SERVER_HOST }}"
           username: "${{ secrets.SSH_USERNAME }}"
           key: ${{ secrets.SSHKEY }}
+          port: 10022
           envs: GITHUB_SHA, REGISTRY 
-          scripts: |
+          script: |
             TAG_NAME=$(echo $GITHUB_SHA | head -c7)
 
             docker login -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }}
