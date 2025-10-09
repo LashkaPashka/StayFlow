@@ -17,11 +17,11 @@ jobs:
       matrix:
         include:
           - image: booking
-            service: booking
+            service: BookingService
           - image: hotel
-            service: hotel
+            service: HotelService
           - image: payment
-            service: payment
+            service: PaymentService
 
     steps:
       - name: Checkout master
