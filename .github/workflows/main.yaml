@@ -15,7 +15,6 @@ jobs:
 
     strategy:
       matrix:
-        image: [booking, hotel, payment]
         service: [BookingService, HotelService, PaymentService]
 
     steps:
@@ -32,7 +31,7 @@ jobs:
         run: |
           TAG_NAME=$(echo $GITHUB_SHA | head -c7)
 
-          IMAGE_NAME=ghcr.io/${{ github.repository }}/${{ matrix.image }}_img
+          IMAGE_NAME=ghcr.io/${{ github.repository }}/${{ matrix.service }}_img
 
           docker buildx create --use
           docker buildx build -t $IMAGE_NAME:$TAG_NAME -t $IMAGE_NAME:latest -f ./${{ matrix.service }}/Dockerfile ./${{ matrix.service }}
