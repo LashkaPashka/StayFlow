@@ -20,7 +20,10 @@ func New(cfg config.Config, logger *slog.Logger) *Storage {
 
 	pool, err := pgxpool.New(context.Background(), cfg.StoragePath)
 	if err != nil {
-		logger.Error("Invalid connection Db", slog.String("File error: ", op))
+		logger.Error("Invalid connection Db", 
+			slog.String("File error: ", op),
+			slog.String("err", err.Error()),
+		)
 		return nil
 	}
 
@@ -37,7 +40,7 @@ func New(cfg config.Config, logger *slog.Logger) *Storage {
 	}
 }
 
-func (s *Storage) SaveBooking(ctx context.Context, booking model.Booking) (booking_id string, err error) {
+func (s *Storage) SaveBooking(ctx context.Context, booking model.Booking) (bookingID string, err error) {
 	const op = "bookingService.storage.postgresql.SaveBooking"
 
 	query := `INSERT INTO bookings 
@@ -59,18 +62,21 @@ func (s *Storage) SaveBooking(ctx context.Context, booking model.Booking) (booki
 		"idempotency_key": booking.IdempotencyKey,
 	}
 
-	err = s.Pool.QueryRow(ctx, query, args).Scan(&booking_id)
+	err = s.Pool.QueryRow(ctx, query, args).Scan(&bookingID)
 	if err != nil {
-		s.Logger.Error("Invalid query SQL", slog.String("op", op))
+		s.Logger.Error("Invalid query SQL",
+			slog.String("op", op),
+			slog.String("err", err.Error()),
+		)
 		return "", err
 	}
 
 	s.Logger.Info("Booking was created successffuly in Db")
 
-	return booking_id, err
+	return bookingID, err
 }
 
-func (s *Storage) UpdateStatusOfBooking(ctx context.Context, booking_id string, status string) (booking model.Booking, err error) {
+func (s *Storage) UpdateStatusOfBooking(ctx context.Context, bookingID, status string) (booking model.Booking, err error) {
 	const op = "BookingService.storage.postgresql.UpdateStatusOfBooking"
 
 	query := `UPDATE bookings 
@@ -82,7 +88,7 @@ func (s *Storage) UpdateStatusOfBooking(ctx context.Context, booking_id string, 
 
 	args := pgx.NamedArgs{
 		"status":     status,
-		"booking_id": booking_id,
+		"booking_id": bookingID,
 	}
 
 	err = s.Pool.QueryRow(ctx, query, args).Scan(
@@ -96,7 +102,10 @@ func (s *Storage) UpdateStatusOfBooking(ctx context.Context, booking_id string, 
 		&booking.Status,
 	)
 	if err != nil {
-		s.Logger.Error("Error updated status", slog.String("op", op))
+		s.Logger.Error("Error updated status", 
+		slog.String("op", op),
+		slog.String("err", err.Error()),
+	)
 		return model.Booking{}, err
 	}
 
@@ -105,7 +114,7 @@ func (s *Storage) UpdateStatusOfBooking(ctx context.Context, booking_id string, 
 	return booking, err
 }
 
-func (s *Storage) GetBooking(ctx context.Context, booking_id string, user_id string) (booking model.Booking, err error) {
+func (s *Storage) GetBooking(ctx context.Context, bookingID, userID string) (booking model.Booking, err error) {
 	const op = "BookingService.storage.postgresql.GetBooking"
 
 	query := `SELECT user_id, hotel_id, room_type_id, TO_CHAR(check_in, 'YYYY-MM-DD'), 
@@ -116,8 +125,8 @@ func (s *Storage) GetBooking(ctx context.Context, booking_id string, user_id str
 			  `
 
 	args := pgx.NamedArgs{
-		"booking_id": booking_id,
-		"user_id":    user_id,
+		"booking_id": bookingID,
+		"user_id":    userID,
 	}
 
 	if err = s.Pool.QueryRow(ctx, query, args).Scan(
@@ -130,14 +139,17 @@ func (s *Storage) GetBooking(ctx context.Context, booking_id string, user_id str
 		&booking.Nights,
 		&booking.Status,
 	); err != nil {
-		s.Logger.Error("Invalid getbooking query", slog.String("op", op))
+		s.Logger.Error("Invalid getbooking query",
+			slog.String("op", op),
+			slog.String("err", err.Error()),	
+		)
 		return model.Booking{}, err
 	}
 
 	return booking, err
 }
 
-func (s *Storage) GetBookings(ctx context.Context, user_id string) (bookings []model.Booking, err error) {
+func (s *Storage) GetBookings(ctx context.Context, userID string) (bookings []model.Booking, err error) {
 	const op = "BookingService.storage.postgresql.GetBookings"
 
 	query := `SELECT user_id, hotel_id, room_type_id, TO_CHAR(check_in, 'YYYY-MM-DD'), 
@@ -147,7 +159,7 @@ func (s *Storage) GetBookings(ctx context.Context, user_id string) (bookings []m
 			  ORDER BY nights
 			  `
 	args := pgx.NamedArgs{
-		"user_id": user_id,
+		"user_id": userID,
 	}
 
 	rows, err := s.Pool.Query(ctx, query, args)
@@ -165,7 +177,10 @@ func (s *Storage) GetBookings(ctx context.Context, user_id string) (bookings []m
 			&booking.Nights,
 			&booking.Status,
 		); err != nil {
-			s.Logger.Error("Invalid getbookings", slog.String("op", op))
+			s.Logger.Error("Invalid getbookings", 
+			slog.String("op", op),
+			slog.String("err", err.Error()),
+		)
 			return bookings, err
 		}
 

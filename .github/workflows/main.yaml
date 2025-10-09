@@ -36,14 +36,14 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           TAG_NAME=$(echo $GITHUB_SHA | head -c7)
-          FULL_IMAGE_NAME=$REGISTRY/${{ matrix.image }}_img
+          IMAGE_NAME=$REGISTRY/${{ matrix.image }}_img
 
           echo "Building $FULL_IMAGE_NAME:$TAG_NAME"
 
           docker buildx create --use
           docker buildx build \
-            -t $FULL_IMAGE_NAME:$TAG_NAME \
-            -t $FULL_IMAGE_NAME:latest \
+            -t $IMAGE_NAME:$TAG_NAME \
+            -t $IMAGE_NAME:latest \
             -f ./${{ matrix.service }}/Dockerfile ./${{ matrix.service }} \
             --push
   
@@ -58,11 +58,9 @@ jobs:
           host: "${{ secrets.SERVER_HOST }}"
           username: "${{ secrets.SSH_USERNAME }}"
           key: ${{ secrets.SSHKEY }}
-          port: 10022
+          port: ${{ secrets.PORT }}
           envs: GITHUB_SHA, REGISTRY 
           script: |
-            TAG_NAME=$(echo $GITHUB_SHA | head -c7)
-
             docker login -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }}
 
             cd ~
@@ -70,4 +68,3 @@ jobs:
             docker compose pull
             docker compose down
             docker compose up -d
-            

@@ -3,6 +3,8 @@ package service
 import (
 	"context"
 	"log/slog"
+	"os"
+	"time"
 
 	"github.com/LashkaPashka/BookingService/server/internal/config"
 	"github.com/LashkaPashka/BookingService/server/internal/model"
@@ -26,10 +28,10 @@ type BookingSaver interface {
 	SaveBooking(
 		ctx context.Context,
 		booking model.Booking,
-	) (booking_id string, err error)
+	) (bookingID string, err error)
 	UpdateStatusOfBooking(
 		ctx context.Context,
-		booking_id string,
+		bookingID,
 		status string,
 	) (booking model.Booking, err error)
 }
@@ -37,13 +39,13 @@ type BookingSaver interface {
 type BookingGetter interface {
 	GetBooking(
 		ctx context.Context,
-		booking_id string,
-		user_id string,
-	) (model.Booking, error)
+		bookingID,
+		userID string,
+	) (booking model.Booking, err error)
 	GetBookings(
 		ctx context.Context,
-		user_id string,
-	) ([]model.Booking, error)
+		userID string,
+	) (bookings []model.Booking, err error)
 }
 
 type BookingService struct {
@@ -94,7 +96,7 @@ func (b *BookingService) CreateBooking(ctx context.Context, booking model.Bookin
 			slog.String("op", op),
 			slog.String("err", err.Error()),
 		)
-		return "aaa", "", "FAILED"
+		return "", "", "FAILED"
 	}
 
 	if !success {
@@ -103,7 +105,7 @@ func (b *BookingService) CreateBooking(ctx context.Context, booking model.Bookin
 	}
 
 	// 4. create payment
-	url, _, status = b.grpcclienter.CreatePayment(b.cfg.AddrPaymentService, model.PaymentInfo{
+	url, paymentID, status := b.grpcclienter.CreatePayment(b.cfg.AddrPaymentService, model.PaymentInfo{
 		UserID:         booking.UserID,
 		BookingID:      booking_id,
 		TotalAmount:    booking.TotalAmount,
@@ -113,21 +115,27 @@ func (b *BookingService) CreateBooking(ctx context.Context, booking model.Bookin
 		IdempotencyKey: booking.IdempotencyKey,
 	})
 
+	go b.ConfirmBooking(ctx, booking_id, paymentID)
+
 	return url, booking_id, status
 }
 
-func (b *BookingService) ConfirmBooking(ctx context.Context, booking_id, payment_id string) model.Booking {
+func (b *BookingService) ConfirmBooking(ctx context.Context, bookingID, paymentID string) {
 	const op = "BookingService.service.bookings.ConfirmBooking"
 
-	paymentStatus := b.grpcclienter.GetPaymentStatus(b.cfg.StoragePath, payment_id)
+	ctx, cancel := context.WithTimeout(ctx, 2*time.Minute)
 
-	booking, err := b.bookingSaver.UpdateStatusOfBooking(ctx, booking_id, paymentStatus)
+	_ = cancel
+
+	<- ctx.Done()
+
+	paymentStatus := b.grpcclienter.GetPaymentStatus(b.cfg.StoragePath, bookingID)
+
+	_, err := b.bookingSaver.UpdateStatusOfBooking(ctx, paymentID, paymentStatus)
 	if err != nil {
 		b.logger.Error("Invalid updatedofbookings", slog.String("op", op))
-		return model.Booking{}
+		os.Exit(1)	
 	}
-
-	return booking
 }
 
 func (b *BookingService) CancelBooking(ctx context.Context, booking_id, paymendID, user_id, reason string) string {
@@ -140,11 +148,11 @@ func (b *BookingService) CancelBooking(ctx context.Context, booking_id, paymendI
 			slog.String("err", err.Error()),
 		)
 
-		return ""
+		return "FAILED"
 	}
 
 	if !success {
-		return "failed"
+		return "FAILED"
 	}
 
 	_, err = b.grpcclienter.ReleaseRoom(b.cfg.AddrHotelService, model.Booking{})

@@ -13,7 +13,7 @@ import (
 
 type BookingService interface {
 	CreateBooking(ctx context.Context, booking model.Booking) (url, booking_id, status string)
-	ConfirmBooking(ctx context.Context, booking_id, payment_id string) model.Booking
+	ConfirmBooking(ctx context.Context, booking_id, payment_id string)
 	CancelBooking(ctx context.Context, booking_id, paymendID, user_id, reason string) string
 	GetBooking(ctx context.Context, booking_id, user_id string) model.Booking
 	ListBookings(ctx context.Context, user_id string) []model.Booking
@@ -45,26 +45,6 @@ func (s *serverAPI) CreateBooking(
 		Url:       url,
 		BookingId: booking_id,
 		Status:    status,
-	}, nil
-}
-
-func (s *serverAPI) ConfirmBooking(
-	ctx context.Context,
-	in *bookingsV1.ConfirmBookingRequest,
-) (*bookingsV1.Booking, error) {
-
-	updatedBooking := s.bookingService.ConfirmBooking(ctx, in.BookingId, in.PaymentId)
-
-	return &bookingsV1.Booking{
-		BookingId:  "",
-		UserId:     updatedBooking.UserID,
-		HotelId:    updatedBooking.HotelID,
-		RoomTypeId: updatedBooking.RoomTypeID,
-		Status:     updatedBooking.Status,
-		CheckIn:    updatedBooking.CheckIn,
-		CheckOut:   updatedBooking.CheckOut,
-		CreatedAt:  updatedBooking.CreatedAt.Format("2006-01-02"),
-		UpdatedAt:  updatedBooking.UpdatedAt.Format("2006-01-02"),
 	}, nil
 }
 
