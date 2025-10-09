@@ -15,7 +15,13 @@ jobs:
 
     strategy:
       matrix:
-        service: [BookingService, HotelService, PaymentService]
+        include:
+          - image: booking
+            service: booking
+          - image: hotel
+            service: hotel
+          - image: payment
+            service: payment
 
     steps:
       - name: Checkout master
@@ -30,12 +36,16 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           TAG_NAME=$(echo $GITHUB_SHA | head -c7)
+          FULL_IMAGE_NAME=$REGISTRY/${{ matrix.image }}_img
 
-          IMAGE_NAME=$REGISTRY/${{ matrix.service }}_img
+          echo "Building $FULL_IMAGE_NAME:$TAG_NAME"
 
           docker buildx create --use
-          docker buildx build -t $IMAGE_NAME:$TAG_NAME -t $IMAGE_NAME:latest -f ./${{ matrix.service }}/Dockerfile ./${{ matrix.service }}
-    
+          docker buildx build \
+            -t $FULL_IMAGE_NAME:$TAG_NAME \
+            -t $FULL_IMAGE_NAME:latest \
+            -f ./${{ matrix.service }}/Dockerfile ./${{ matrix.service }} \
+            --push
   # deploy-image:
   #   runs-on: ubuntu-latest
   #   needs: image-build-and-push
